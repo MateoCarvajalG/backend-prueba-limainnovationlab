@@ -5,7 +5,13 @@ const Op = Sequelize.Op;
 
 exports.listar = async (req,res,next) =>{
     try {
-        const producto =  await db.Productos.findAll()
+        const producto =  await db.Productos.findAll({
+            include:{
+                model: db.Categorias,
+                as : "Categorias" ,
+                required:true
+            }
+        })
         if (producto){
             res.status(200).json(producto)
         }else{
@@ -24,7 +30,16 @@ exports.listar = async (req,res,next) =>{
 
 exports.one = async(req,res,next) =>{
     try {
-        const producto = await db.Productos.findOne({where : {id : req.params.id.slice(1)}})
+        const producto = await db.Productos.findOne({
+            attributes:['name','url_img','precio','stock'],
+            where : {id : req.params.id.slice(1)},
+            include:{
+                model: db.Categorias,
+                as : "Categorias" ,
+                attributes : ['name'],
+                required:true
+            } 
+            })
         if (producto){
             res.status(200).json(producto)
         }else{
